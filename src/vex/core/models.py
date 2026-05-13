@@ -18,11 +18,10 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field
-
 
 # ---------------------------------------------------------------------------
 # Enums
@@ -112,7 +111,7 @@ class Message(BaseModel):
 
     role: Role
     content: str
-    name: Optional[str] = None
+    name: str | None = None
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -125,7 +124,7 @@ class Conversation(BaseModel):
 
     messages: list[Message] = Field(default_factory=list)
 
-    def add(self, role: Role, content: str, **metadata: Any) -> "Conversation":
+    def add(self, role: Role, content: str, **metadata: Any) -> Conversation:
         self.messages.append(Message(role=role, content=content, metadata=metadata))
         return self
 
@@ -179,12 +178,12 @@ class ProbeResult(BaseModel):
 
     probe: Probe
     target: str  # target identifier (e.g. "anthropic:claude-sonnet-4-5")
-    response: Optional[str] = None
-    raw_response: Optional[dict[str, Any]] = None
+    response: str | None = None
+    raw_response: dict[str, Any] | None = None
     started_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    finished_at: Optional[datetime] = None
-    duration_ms: Optional[int] = None
-    error: Optional[str] = None
+    finished_at: datetime | None = None
+    duration_ms: int | None = None
+    error: str | None = None
     findings: list[DetectorFinding] = Field(default_factory=list)
 
     #: How to aggregate findings. Defaults to STRICTEST for back-compat;
@@ -258,7 +257,7 @@ class RunSummary(BaseModel):
     run_id: str = Field(default_factory=lambda: str(uuid4()))
     target: str
     started_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    finished_at: Optional[datetime] = None
+    finished_at: datetime | None = None
     results: list[ProbeResult] = Field(default_factory=list)
 
     @property

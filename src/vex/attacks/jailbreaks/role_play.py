@@ -15,11 +15,11 @@ References
 
 from __future__ import annotations
 
-from typing import Iterator
+from collections.abc import Iterator
+from typing import ClassVar
 
 from vex.core.attack import Attack
 from vex.core.models import AttackCategory, Probe, Severity
-
 
 # Seed prompts. These are deliberately tame ask-for-trivia variants — the
 # point is to test whether the persona override succeeds, not to produce
@@ -71,7 +71,7 @@ class RolePlayJailbreakAttack(Attack):
         "Classic persona-override family (DAN, developer-mode, fictional-frame). "
         "Tests whether the model can be coerced into a no-restrictions persona."
     )
-    tags = ["jailbreak", "baseline", "persona"]
+    tags: ClassVar[list[str]] = ["jailbreak", "baseline", "persona"]
 
     def generate(self) -> Iterator[Probe]:
         for variant, prompt, criteria in PERSONAS:

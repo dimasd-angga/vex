@@ -13,7 +13,8 @@ for credible vulnerability disclosure.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import ClassVar, Iterator
+from collections.abc import Iterator
+from typing import ClassVar
 
 from vex.core.models import AttackCategory, Probe, Severity
 

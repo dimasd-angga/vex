@@ -5,7 +5,6 @@ from __future__ import annotations
 from vex.attacks import BUILTIN_ATTACKS
 from vex.attacks.jailbreaks.encoding import CANARY_PHRASE, EncodingJailbreakAttack
 from vex.attacks.prompt_injection.unicode_smuggling import (
-    HIDDEN_CANARY,
     UnicodeSmugglingAttack,
 )
 from vex.core.models import AttackCategory, Role
@@ -34,7 +33,9 @@ def test_unicode_smuggling_payload_contains_invisible_chars() -> None:
     found_invisible = False
     for probe in UnicodeSmugglingAttack().generate():
         user_msg = next(m for m in probe.conversation.messages if m.role == Role.USER)
-        if any(0xE0000 <= ord(c) <= 0xE007F or ord(c) in (0x200D, 0x202E) for c in user_msg.content):
+        if any(
+            0xE0000 <= ord(c) <= 0xE007F or ord(c) in (0x200D, 0x202E) for c in user_msg.content
+        ):
             found_invisible = True
             break
     assert found_invisible, "no smuggling payload contained expected invisible Unicode"
