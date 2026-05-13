@@ -24,7 +24,6 @@ from __future__ import annotations
 import asyncio
 import sys
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -35,7 +34,7 @@ from vex import __version__
 from vex.attacks import BUILTIN_ATTACKS
 from vex.core.attack import Attack
 from vex.core.detector import Detector
-from vex.core.models import AttackCategory, ProbeResult, Verdict, VerdictMode
+from vex.core.models import AttackCategory, ProbeResult, RunSummary, Verdict, VerdictMode
 from vex.core.orchestrator import Orchestrator
 from vex.core.target import Target
 from vex.detectors.compliance import ComplianceDetector
@@ -81,7 +80,7 @@ def _build_provider(provider_name: str) -> Provider:
     )
 
 
-def _parse_target(spec: str, *, system_prompt: Optional[str] = None) -> Target:
+def _parse_target(spec: str, *, system_prompt: str | None = None) -> Target:
     """Parse a ``provider:model`` spec into a :class:`Target`."""
     if ":" not in spec:
         raise typer.BadParameter(
@@ -99,8 +98,8 @@ def _parse_target(spec: str, *, system_prompt: Optional[str] = None) -> Target:
 
 
 def _select_attacks(
-    categories: Optional[list[AttackCategory]] = None,
-    attack_ids: Optional[list[str]] = None,
+    categories: list[AttackCategory] | None = None,
+    attack_ids: list[str] | None = None,
 ) -> list[Attack]:
     """Filter built-in attacks by category and/or explicit ID list."""
     selected: list[Attack] = []
@@ -147,13 +146,13 @@ def scan(
         "-t",
         help="Target spec in 'provider:model' form (e.g. 'anthropic:claude-sonnet-4-5-20250929').",
     ),
-    system_prompt: Optional[str] = typer.Option(
+    system_prompt: str | None = typer.Option(
         None,
         "--system-prompt",
         "-s",
         help="System prompt to apply to the target. Use --system-prompt-file for long prompts.",
     ),
-    system_prompt_file: Optional[Path] = typer.Option(
+    system_prompt_file: Path | None = typer.Option(
         None,
         "--system-prompt-file",
         help="Path to a file containing the target's system prompt.",
@@ -161,25 +160,25 @@ def scan(
         file_okay=True,
         dir_okay=False,
     ),
-    category: Optional[list[AttackCategory]] = typer.Option(
+    category: list[AttackCategory] | None = typer.Option(
         None,
         "--category",
         "-c",
         help="Filter attacks by category (repeatable).",
         case_sensitive=False,
     ),
-    attack: Optional[list[str]] = typer.Option(
+    attack: list[str] | None = typer.Option(
         None,
         "--attack",
         "-a",
         help="Run only specific attack IDs (repeatable).",
     ),
-    judge: Optional[str] = typer.Option(
+    judge: str | None = typer.Option(
         None,
         "--judge",
         help="LLM-judge target spec (e.g. 'anthropic:claude-haiku-4-5-20251001').",
     ),
-    judge_system_prompt: Optional[str] = typer.Option(
+    judge_system_prompt: str | None = typer.Option(
         None,
         "--judge-system-prompt",
         help="Override the judge target's system prompt (defaults to Vex's standard judge prompt).",
@@ -187,7 +186,7 @@ def scan(
     concurrency: int = typer.Option(
         8, "--concurrency", "-j", help="Max concurrent probes in flight."
     ),
-    verdict_mode: Optional[VerdictMode] = typer.Option(
+    verdict_mode: VerdictMode | None = typer.Option(
         None,
         "--verdict-mode",
         help=(
@@ -197,7 +196,7 @@ def scan(
         ),
         case_sensitive=False,
     ),
-    output: Optional[Path] = typer.Option(
+    output: Path | None = typer.Option(
         None,
         "--output",
         "-o",
@@ -281,10 +280,8 @@ async def _run_scan(
     attacks: list[Attack],
     *,
     concurrency: int,
-    verdict_mode: Optional[VerdictMode] = None,
-) -> "RunSummary":  # noqa: F821
-    from vex.core.models import RunSummary  # local import to avoid circular noise
-
+    verdict_mode: VerdictMode | None = None,
+) -> RunSummary:
     probes_total = sum(1 for _ in (p for atk in attacks for p in atk.generate()))
     counter = {"done": 0, "vuln": 0}
 
@@ -305,7 +302,7 @@ async def _run_scan(
     )
 
     with Live(spinner, refresh_per_second=8, console=console, transient=True):
-        summary: RunSummary = await orchestrator.run(attacks)
+        summary = await orchestrator.run(attacks)
 
     return summary
 

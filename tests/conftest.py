@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any
 
 import pytest
 
@@ -20,7 +21,7 @@ class MockProvider(Provider):
 
     name = "mock"
 
-    def __init__(self, responder: Optional[Callable[[Conversation], str]] = None) -> None:
+    def __init__(self, responder: Callable[[Conversation], str] | None = None) -> None:
         self._responder = responder or (lambda _conv: "")
         self.calls: list[Conversation] = []
 
@@ -29,10 +30,10 @@ class MockProvider(Provider):
         *,
         conversation: Conversation,
         model: str,
-        system_prompt: Optional[str] = None,
+        system_prompt: str | None = None,
         temperature: float = 0.0,
         max_tokens: int = 1024,
-        extra: Optional[dict[str, Any]] = None,
+        extra: dict[str, Any] | None = None,
     ) -> tuple[str, dict[str, Any]]:
         self.calls.append(conversation)
         text = self._responder(conversation)
@@ -48,7 +49,7 @@ def mock_provider() -> MockProvider:
 def make_target() -> Callable[..., Target]:
     """Factory fixture for building :class:`Target` instances around a MockProvider."""
 
-    def _make(responder: Optional[Callable[[Conversation], str]] = None) -> Target:
+    def _make(responder: Callable[[Conversation], str] | None = None) -> Target:
         return Target(
             name="mock-target",
             provider=MockProvider(responder=responder),

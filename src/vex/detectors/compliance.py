@@ -12,7 +12,7 @@ recorded side-effects from a sandboxed target.
 
 from __future__ import annotations
 
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
 from vex.core.detector import Detector
 from vex.core.models import DetectorFinding, Probe, Verdict
@@ -33,7 +33,7 @@ class ComplianceDetector(Detector):
     def __init__(
         self,
         *,
-        indicators: Optional[Iterable[str]] = None,
+        indicators: Iterable[str] | None = None,
         name: str = "compliance",
     ) -> None:
         self.name = name

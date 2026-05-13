@@ -9,7 +9,7 @@ one provider.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Optional
+from typing import Any
 
 from vex.core.models import Conversation
 
@@ -26,10 +26,10 @@ class Provider(ABC):
         *,
         conversation: Conversation,
         model: str,
-        system_prompt: Optional[str] = None,
+        system_prompt: str | None = None,
         temperature: float = 0.0,
         max_tokens: int = 1024,
-        extra: Optional[dict[str, Any]] = None,
+        extra: dict[str, Any] | None = None,
     ) -> tuple[str, dict[str, Any]]:
         """Send a conversation and return ``(text, raw_response)``.
 
