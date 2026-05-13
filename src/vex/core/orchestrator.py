@@ -12,8 +12,8 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from collections.abc import AsyncIterator, Callable, Iterable
 from datetime import datetime, timezone
-from typing import AsyncIterator, Callable, Iterable, Optional
 
 from vex.core.attack import Attack
 from vex.core.detector import Detector
@@ -55,8 +55,8 @@ class Orchestrator:
         target: Target,
         detectors: Iterable[Detector],
         concurrency: int = 8,
-        on_progress: Optional[ProgressCallback] = None,
-        verdict_mode: Optional[VerdictMode] = None,
+        on_progress: ProgressCallback | None = None,
+        verdict_mode: VerdictMode | None = None,
     ) -> None:
         self.target = target
         self.detectors: list[Detector] = list(detectors)
@@ -87,7 +87,7 @@ class Orchestrator:
                 if self.on_progress is not None:
                     try:
                         self.on_progress(result)
-                    except Exception:  # noqa: BLE001
+                    except Exception:
                         logger.exception("on_progress callback raised")
                 return result
 
@@ -120,7 +120,7 @@ class Orchestrator:
             if self.on_progress is not None:
                 try:
                     self.on_progress(result)
-                except Exception:  # noqa: BLE001
+                except Exception:
                     logger.exception("on_progress callback raised")
             yield result
 
@@ -142,7 +142,7 @@ class Orchestrator:
             text, raw = await self.target.send(probe.conversation)
             result.response = text
             result.raw_response = raw
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             result.error = f"{type(e).__name__}: {e}"
             result.finished_at = datetime.now(timezone.utc)
             result.duration_ms = _duration_ms(result.started_at, result.finished_at)
@@ -160,7 +160,7 @@ class Orchestrator:
         for detector in self.detectors:
             try:
                 finding = await detector.evaluate(probe, result.response or "")
-            except Exception as e:  # noqa: BLE001
+            except Exception as e:
                 finding = DetectorFinding(
                     detector=getattr(detector, "name", detector.__class__.__name__),
                     verdict=Verdict.ERROR,

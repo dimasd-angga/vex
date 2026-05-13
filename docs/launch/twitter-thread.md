@@ -1,4 +1,6 @@
-# Twitter / X launch thread
+# Twitter / X launch thread (v0.1 — original)
+
+> **Note:** the [v0.2 calibration thread](twitter-thread-v02.md) is the stronger narrative ("I shipped a tool, ran it, found my own calibration was wrong, fixed it, shipped v0.2"). Prefer that one for the public launch. This v0.1 thread is preserved for archival reference.
 
 *Each numbered item is one tweet (≤280 chars including line breaks). Edit before posting — adjust pronouns, add the actual screenshot URLs, tag relevant accounts.*
 

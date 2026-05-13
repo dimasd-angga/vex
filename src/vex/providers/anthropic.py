@@ -12,7 +12,7 @@ Environment::
 from __future__ import annotations
 
 import os
-from typing import Any, Optional
+from typing import Any
 
 from tenacity import retry, stop_after_attempt, wait_exponential
 
@@ -25,7 +25,7 @@ class AnthropicProvider(Provider):
 
     name = "anthropic"
 
-    def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None) -> None:
+    def __init__(self, api_key: str | None = None, base_url: str | None = None) -> None:
         try:
             from anthropic import AsyncAnthropic
         except ImportError as e:  # pragma: no cover
@@ -49,10 +49,10 @@ class AnthropicProvider(Provider):
         *,
         conversation: Conversation,
         model: str,
-        system_prompt: Optional[str] = None,
+        system_prompt: str | None = None,
         temperature: float = 0.0,
         max_tokens: int = 1024,
-        extra: Optional[dict[str, Any]] = None,
+        extra: dict[str, Any] | None = None,
     ) -> tuple[str, dict[str, Any]]:
         # Anthropic separates system prompt from messages. Pull it out of the
         # conversation if present, and skip messages with role=SYSTEM.
