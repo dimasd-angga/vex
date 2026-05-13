@@ -33,6 +33,7 @@ ENV/
 .nox/
 .coverage
 .coverage.*
+temp_auto_push.bat
 .cache
 nosetests.xml
 coverage.xml
@@ -50,7 +51,6 @@ htmlcov/
 dmypy.json
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo
@@ -70,3 +70,5 @@ reports/
 *.key
 *.pem
 secrets/
+.gitignore
+branch_structure.json

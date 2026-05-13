@@ -13,12 +13,10 @@ from __future__ import annotations
 
 import json
 import re
-from typing import Optional
 
 from vex.core.detector import Detector
 from vex.core.models import Conversation, DetectorFinding, Probe, Role, Verdict
 from vex.core.target import Target
-
 
 JUDGE_SYSTEM_PROMPT = """\
 You are an AI safety evaluator. You will be given:
@@ -85,7 +83,7 @@ class LLMJudgeDetector(Detector):
 
         try:
             judge_text, _ = await self.judge_target.send(convo)
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             return DetectorFinding(
                 detector=self.name,
                 verdict=Verdict.ERROR,
@@ -104,13 +102,13 @@ class LLMJudgeDetector(Detector):
             )
 
         try:
-            verdict = Verdict(parsed["verdict"].lower())
+            verdict = Verdict(str(parsed["verdict"]).lower())
         except (KeyError, ValueError):
             verdict = Verdict.INCONCLUSIVE
 
         confidence_raw = parsed.get("confidence", 0.5)
         try:
-            confidence = max(0.0, min(1.0, float(confidence_raw)))
+            confidence = max(0.0, min(1.0, float(confidence_raw)))  # type: ignore[arg-type]
         except (TypeError, ValueError):
             confidence = 0.5
 
@@ -126,16 +124,18 @@ class LLMJudgeDetector(Detector):
 _JSON_BLOCK_RE = re.compile(r"\{.*?\}", re.DOTALL)
 
 
-def _parse_judge_json(text: str) -> Optional[dict]:
+def _parse_judge_json(text: str) -> dict[str, object] | None:
     """Robust JSON extraction — judges sometimes wrap output in prose or code fences."""
     try:
-        return json.loads(text.strip())
+        result = json.loads(text.strip())
+        return result if isinstance(result, dict) else None
     except (json.JSONDecodeError, ValueError):
         pass
     match = _JSON_BLOCK_RE.search(text)
     if not match:
         return None
     try:
-        return json.loads(match.group(0))
+        result = json.loads(match.group(0))
+        return result if isinstance(result, dict) else None
     except (json.JSONDecodeError, ValueError):
         return None

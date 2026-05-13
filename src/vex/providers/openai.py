@@ -15,7 +15,7 @@ vLLM/llama.cpp servers) by passing ``base_url``.
 from __future__ import annotations
 
 import os
-from typing import Any, Optional
+from typing import Any
 
 from tenacity import retry, stop_after_attempt, wait_exponential
 
@@ -30,9 +30,9 @@ class OpenAIProvider(Provider):
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        base_url: Optional[str] = None,
-        provider_name: Optional[str] = None,
+        api_key: str | None = None,
+        base_url: str | None = None,
+        provider_name: str | None = None,
     ) -> None:
         try:
             from openai import AsyncOpenAI
@@ -60,10 +60,10 @@ class OpenAIProvider(Provider):
         *,
         conversation: Conversation,
         model: str,
-        system_prompt: Optional[str] = None,
+        system_prompt: str | None = None,
         temperature: float = 0.0,
         max_tokens: int = 1024,
-        extra: Optional[dict[str, Any]] = None,
+        extra: dict[str, Any] | None = None,
     ) -> tuple[str, dict[str, Any]]:
         messages: list[dict[str, str]] = []
         if system_prompt:

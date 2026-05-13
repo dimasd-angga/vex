@@ -19,7 +19,7 @@ Environment::
 from __future__ import annotations
 
 import os
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -36,7 +36,7 @@ class OllamaProvider(Provider):
 
     name = "ollama"
 
-    def __init__(self, base_url: Optional[str] = None, timeout: float = 120.0) -> None:
+    def __init__(self, base_url: str | None = None, timeout: float = 120.0) -> None:
         self._base_url = (
             base_url or os.environ.get("OLLAMA_HOST", "http://localhost:11434")
         ).rstrip("/")
@@ -52,10 +52,10 @@ class OllamaProvider(Provider):
         *,
         conversation: Conversation,
         model: str,
-        system_prompt: Optional[str] = None,
+        system_prompt: str | None = None,
         temperature: float = 0.0,
         max_tokens: int = 1024,
-        extra: Optional[dict[str, Any]] = None,
+        extra: dict[str, Any] | None = None,
     ) -> tuple[str, dict[str, Any]]:
         messages: list[dict[str, str]] = []
         if system_prompt:

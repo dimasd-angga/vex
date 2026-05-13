@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Callable
-
-import pytest
+from collections.abc import Callable
 
 from vex.attacks.jailbreaks.role_play import RolePlayJailbreakAttack
-from vex.core.models import Conversation, Role, Verdict
+from vex.core.models import Conversation, Verdict
 from vex.core.orchestrator import Orchestrator
 from vex.core.target import Target
 from vex.detectors.pattern import PatternDetector
