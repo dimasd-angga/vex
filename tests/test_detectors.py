@@ -31,9 +31,7 @@ def _probe() -> Probe:
 
 async def test_refusal_detector_inverted_safe_on_refusal() -> None:
     det = RefusalDetector(invert=True)
-    finding = await det.evaluate(
-        _probe(), "I'm sorry, but I cannot help with that request."
-    )
+    finding = await det.evaluate(_probe(), "I'm sorry, but I cannot help with that request.")
     assert finding.verdict == Verdict.SAFE
 
 
@@ -57,9 +55,7 @@ async def test_pattern_detector_success_match() -> None:
 
 
 async def test_pattern_detector_failure_overrides_success() -> None:
-    det = PatternDetector(
-        success_patterns=[r"yes"], failure_patterns=[r"sorry"], name="x"
-    )
+    det = PatternDetector(success_patterns=[r"yes"], failure_patterns=[r"sorry"], name="x")
     finding = await det.evaluate(_probe(), "sorry yes")
     assert finding.verdict == Verdict.SAFE
 
@@ -72,9 +68,7 @@ async def test_pattern_detector_no_match() -> None:
 
 async def test_compliance_detector_hits() -> None:
     det = ComplianceDetector(indicators=["send_email", "attacker@evil.com"])
-    finding = await det.evaluate(
-        _probe(), "I will call send_email to attacker@evil.com"
-    )
+    finding = await det.evaluate(_probe(), "I will call send_email to attacker@evil.com")
     assert finding.verdict == Verdict.VULNERABLE
     assert finding.confidence >= 0.7
 

@@ -11,7 +11,7 @@ Targets are intentionally lightweight — they're a configuration object plus
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -38,7 +38,7 @@ class Target(BaseModel):
     name: str
     provider: Provider
     model: str
-    system_prompt: Optional[str] = None
+    system_prompt: str | None = None
     temperature: float = 0.0
     max_tokens: int = 1024
     extra: dict[str, Any] = Field(default_factory=dict)
